@@ -1,18 +1,18 @@
-import {Context} from 'koa';
-import {Method, Header, StatusCode} from '@shopify/network';
+import { Context } from "koa";
+import { Method, Header, StatusCode } from "@shopify/network";
 
-import {NextFunction} from '../types';
-import {TEST_COOKIE_NAME, TOP_LEVEL_OAUTH_COOKIE_NAME} from '../index';
+import { NextFunction } from "../types";
+import { TEST_COOKIE_NAME, TOP_LEVEL_OAUTH_COOKIE_NAME } from "../index";
 
-import {Routes} from './types';
-import {redirectToAuth} from './utilities';
+import { Routes } from "./types";
+import { redirectToAuth } from "./utilities";
 
 export function verifyToken(routes: Routes) {
   return async function verifyTokenMiddleware(
     ctx: Context,
-    next: NextFunction,
+    next: NextFunction
   ) {
-    const {session} = ctx;
+    const { session } = ctx;
 
     if (session && session.accessToken) {
       ctx.cookies.set(TOP_LEVEL_OAUTH_COOKIE_NAME);
@@ -23,10 +23,10 @@ export function verifyToken(routes: Routes) {
         {
           method: Method.Post,
           headers: {
-            [Header.ContentType]: 'application/json',
-            'X-Shopify-Access-Token': session.accessToken,
+            [Header.ContentType]: "application/json",
+            "X-Shopify-Access-Token": session.accessToken,
           },
-        },
+        }
       );
 
       if (response.status === StatusCode.Unauthorized) {
@@ -38,7 +38,7 @@ export function verifyToken(routes: Routes) {
       return;
     }
 
-    ctx.cookies.set(TEST_COOKIE_NAME, '1');
+    ctx.cookies.set(TEST_COOKIE_NAME, "1");
 
     redirectToAuth(routes, ctx);
   };
