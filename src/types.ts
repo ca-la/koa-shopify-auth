@@ -1,12 +1,12 @@
-import {Context} from 'koa';
+import { Context } from "koa";
 
-export type AccessMode = 'online' | 'offline';
+export type AccessMode = "online" | "offline";
 
 export interface AuthConfig {
   secret: string;
   apiKey: string;
   myShopifyDomain?: string;
-  accessMode?: 'online' | 'offline';
+  accessMode?: "online" | "offline";
   afterAuth?(ctx: Context): void;
 }
 

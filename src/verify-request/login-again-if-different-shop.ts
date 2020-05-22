@@ -1,16 +1,16 @@
-import {Context} from 'koa';
+import { Context } from "koa";
 
-import {NextFunction} from '../types';
+import { NextFunction } from "../types";
 
-import {Routes} from './types';
-import {clearSession, redirectToAuth} from './utilities';
+import { Routes } from "./types";
+import { clearSession, redirectToAuth } from "./utilities";
 
 export function loginAgainIfDifferentShop(routes: Routes) {
   return async function loginAgainIfDifferentShopMiddleware(
     ctx: Context,
-    next: NextFunction,
+    next: NextFunction
   ) {
-    const {query, session} = ctx;
+    const { query, session } = ctx;
 
     if (session && query.shop && session.shop !== query.shop) {
       clearSession(ctx);

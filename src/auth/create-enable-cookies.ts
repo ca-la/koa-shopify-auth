@@ -1,19 +1,19 @@
-import { Context } from 'koa';
+import { Context } from "koa";
 
-import { OAuthStartOptions } from '../types';
+import { OAuthStartOptions } from "../types";
 
-import Error from './errors';
+import Error from "./errors";
 
-const HEADING = 'Enable cookies';
+const HEADING = "Enable cookies";
 const BODY =
-  'You must manually enable cookies in this browser in order to use this app within Shopify.';
+  "You must manually enable cookies in this browser in order to use this app within Shopify.";
 const FOOTER = `Cookies let the app authenticate you by temporarily storing your preferences and personal
 information. They expire after 30 days.`;
-const ACTION = 'Enable cookies';
+const ACTION = "Enable cookies";
 
 export default function createEnableCookies({
   apiKey,
-  prefix = ''
+  prefix = "",
 }: OAuthStartOptions) {
   return function enableCookies(ctx: Context) {
     const { query } = ctx;

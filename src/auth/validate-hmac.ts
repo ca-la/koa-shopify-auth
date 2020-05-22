@@ -1,15 +1,15 @@
-import querystring from 'querystring';
-import crypto from 'crypto';
+import querystring from "querystring";
+import crypto from "crypto";
 
-import {Context} from 'koa';
-import safeCompare from 'safe-compare';
+import { Context } from "koa";
+import safeCompare from "safe-compare";
 
 export default function validateHmac(
   hmac: string,
   secret: string,
-  query: Context['query'],
+  query: Context["query"]
 ) {
-  const {hmac: _hmac, signature: _signature, ...map} = query;
+  const { hmac: _hmac, signature: _signature, ...map } = query;
 
   const orderedMap = Object.keys(map)
     .sort((value1, value2) => value1.localeCompare(value2))
@@ -20,9 +20,9 @@ export default function validateHmac(
 
   const message = querystring.stringify(orderedMap);
   const generatedHash = crypto
-    .createHmac('sha256', secret)
+    .createHmac("sha256", secret)
     .update(message)
-    .digest('hex');
+    .digest("hex");
 
   return safeCompare(generatedHash, hmac);
 }

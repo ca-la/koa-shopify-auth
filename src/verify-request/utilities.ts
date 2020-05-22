@@ -1,13 +1,13 @@
-import {Context} from 'koa';
+import { Context } from "koa";
 
-import {Routes} from './types';
+import { Routes } from "./types";
 
 export function redirectToAuth(
-  {fallbackRoute, authRoute}: Routes,
-  ctx: Context,
+  { fallbackRoute, authRoute }: Routes,
+  ctx: Context
 ) {
   const {
-    query: {shop},
+    query: { shop },
   } = ctx;
 
   const routeForRedirect =

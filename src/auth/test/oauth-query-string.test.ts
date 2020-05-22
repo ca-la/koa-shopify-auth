@@ -1,79 +1,79 @@
-import querystring from 'querystring';
+import querystring from "querystring";
 
-import {createMockContext} from '@shopify/jest-koa-mocks';
+import { createMockContext } from "@shopify/jest-koa-mocks";
 
-import oAuthQueryString from '../oauth-query-string';
+import oAuthQueryString from "../oauth-query-string";
 
-jest.mock('nonce', () => {
+jest.mock("nonce", () => {
   const fakeFactory = jest.fn();
   return () => fakeFactory;
 });
-const nonce = require.requireMock('nonce');
+const nonce = require.requireMock("nonce");
 
 const query = querystring.stringify.bind(querystring);
-const fakeNonce = 'fakenonce';
-const baseUrl = 'myapp.com/auth';
-const callbackPath = '/auth/callback';
-const shop = 'shop1.myshopify.io';
+const fakeNonce = "fakenonce";
+const baseUrl = "myapp.com/auth";
+const callbackPath = "/auth/callback";
+const shop = "shop1.myshopify.io";
 
 const baseConfig = {
-  apiKey: 'myapikey',
-  secret: 'mysecret',
-  scopes: ['write_orders, write_products'],
+  apiKey: "myapikey",
+  secret: "mysecret",
+  scopes: ["write_orders, write_products"],
 };
 
 const queryData = {
   state: fakeNonce,
-  scope: 'write_orders, write_products',
+  scope: "write_orders, write_products",
   // eslint-disable-next-line @typescript-eslint/camelcase
   client_id: baseConfig.apiKey,
   // eslint-disable-next-line @typescript-eslint/camelcase
   redirect_uri: `https://${baseUrl}/callback`,
 };
 
-describe('oAuthQueryString', () => {
+describe("oAuthQueryString", () => {
   beforeEach(() => {
     const mockedNonce = nonce();
 
     mockedNonce.mockImplementation(() => fakeNonce);
   });
 
-  it('returns a valid query string', () => {
+  it("returns a valid query string", () => {
     const ctx = createMockContext({
-      url: `https://${baseUrl}?${query({shop})}`,
+      url: `https://${baseUrl}?${query({ shop })}`,
     });
 
     const generatedQueryString = oAuthQueryString(
       ctx,
       baseConfig,
-      callbackPath,
+      callbackPath
     );
 
     expect(generatedQueryString).toBe(query(queryData));
   });
 
-  it('sets nonce cookie', () => {
+  it("sets nonce cookie", () => {
     const ctx = createMockContext({
-      url: `https://${baseUrl}?${query({shop})}`,
+      url: `https://${baseUrl}?${query({ shop })}`,
     });
 
     oAuthQueryString(ctx, baseConfig, callbackPath);
 
-    expect(ctx.cookies.set).toHaveBeenCalledWith('shopifyNonce', fakeNonce);
+    expect(ctx.cookies.set).toHaveBeenCalledWith("shopifyNonce", fakeNonce);
   });
 
-  it('query string includes per-user grant for accessMode: online', () => {
+  it("query string includes per-user grant for accessMode: online", () => {
     const ctx = createMockContext({
-      url: 'https://myapp.com/auth?shop=shop1.myshopify.io',
+      url: "https://myapp.com/auth?shop=shop1.myshopify.io",
     });
 
     const generatedQueryString = oAuthQueryString(
       ctx,
-      {...baseConfig, accessMode: 'online'},
-      callbackPath,
+      { ...baseConfig, accessMode: "online" },
+      callbackPath
     );
 
-    const grantQuery = query({...queryData, 'grant_options[]': 'per-user'});
+    const grantQuery = query({ ...queryData, "grant_options[]": "per-user" });
     expect(generatedQueryString).toBe(grantQuery);
   });
 });

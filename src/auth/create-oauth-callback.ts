@@ -1,19 +1,19 @@
-import querystring from 'querystring';
+import querystring from "querystring";
 
-import {Context} from 'koa';
+import { Context } from "koa";
 
-import {AuthConfig} from '../types';
+import { AuthConfig } from "../types";
 
-import Error from './errors';
-import validateHmac from './validate-hmac';
+import Error from "./errors";
+import validateHmac from "./validate-hmac";
 
 export default function createOAuthCallback(config: AuthConfig) {
   return async function oAuthCallback(ctx: Context) {
-    const {query, cookies} = ctx;
-    const {code, hmac, shop, state: nonce} = query;
-    const {apiKey, secret, afterAuth} = config;
+    const { query, cookies } = ctx;
+    const { code, hmac, shop, state: nonce } = query;
+    const { apiKey, secret, afterAuth } = config;
 
-    if (nonce == null || cookies.get('shopifyNonce') !== nonce) {
+    if (nonce == null || cookies.get("shopifyNonce") !== nonce) {
       ctx.throw(403, Error.NonceMatchFailed);
     }
 
@@ -38,13 +38,13 @@ export default function createOAuthCallback(config: AuthConfig) {
     const accessTokenResponse = await fetch(
       `https://${shop}/admin/oauth/access_token`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': Buffer.byteLength(accessTokenQuery).toString(),
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Length": Buffer.byteLength(accessTokenQuery).toString(),
         },
         body: accessTokenQuery,
-      },
+      }
     );
 
     if (!accessTokenResponse.ok) {
@@ -53,7 +53,7 @@ export default function createOAuthCallback(config: AuthConfig) {
     }
 
     const accessTokenData = await accessTokenResponse.json();
-    const {access_token: accessToken} = accessTokenData;
+    const { access_token: accessToken } = accessTokenData;
 
     if (ctx.session) {
       ctx.session.shop = shop;
